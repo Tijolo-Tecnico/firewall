@@ -11,7 +11,7 @@ IPTSave="/usr/sbin/iptables-save > /etc/iptables/rules.v4"
 
 # DNS da máquina da WAN  
 DNS1="192.168.1.68"
-DNS2="102.168.1.254"
+DNS2="192.168.1.254"
 
 # DNS público
 DNS3="1.1.1.1"
@@ -69,12 +69,14 @@ $IPTables -A OUTPUT -o $LAN -p tcp -m tcp -s $WAN --sport 49152:65535 -d 0/0 --d
 $IPTables -A INPUT -i $LAN -p tcp -s 0/0 -d $WAN --sport 443 --dport 49152:65535 -m state --state ESTABLISHED -j ACCEPT 
 
 # Aceita ligações de SSH a partir do computador pessoal ( só e mais nenhum ) 
+$IPTables -A INPUT -p tcp -s 10.0.0.101 --dport 22 -m conntrack --ctstate NEW,ESTRABLISHED -j LOG 
 $IPTables -A INPUT -p tcp -s 10.0.0.101 --dport 22 -m conntrack --ctstate NEW,ESTRABLISHED -j ACCEPT 
+$IPTables -A OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j LOG
 $IPTables -A OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT 
 
 # Aceita ligações para o Webmin a partir do computador pessoa ( só e mais nenhum ) 
-$IPTables -A INPUT -p tcp -s 10.0.0.101 --dport 10000 -m conntrack --ctstate NEW,ESTRABLISHED -j ACCEPT 
-$IPTables -A OUTPUT -p tcp --sport 10000 -m conntrack --ctstate ESTABLISHED -j ACCEPT 
+#$IPTables -A INPUT -p tcp -s 10.0.0.101 --dport 10000 -m conntrack --ctstate NEW,ESTRABLISHED -j ACCEPT 
+#$IPTables -A OUTPUT -p tcp --sport 10000 -m conntrack --ctstate ESTABLISHED -j ACCEPT 
 
 # Preparar para redireccionar tráfico: 
 echo "1" > /proc/sys/net/ipv4/ip_forward 
@@ -87,6 +89,7 @@ $IPTables -A FORWARD -i $LAN -o $WAN -j ACCEPT
 # Proteção de scans: proibir scans 
 $IPTables -N port-scanning
 $IPTables -A port-scanning -p tcp --tcp-flags SYN,ACK,FIN,RST RST -m limit --limit 1/s --limit-burst 2 -j RETURN
+$IPTables -A port-scanning -j LOG
 $IPTables -A port-scanning -j DROP
 
 # Syn-Flood Protection
@@ -100,6 +103,7 @@ $IPTables -A INPUT -p icmp -j DROP
 $IPTables -A OUTPUT -p icmp -j ACCEPT
 
 # Block packages that are not SYN 
+$IPTables -A INPUT -p tcp ! --syn -m state --state NEW -j LOG
 $IPTables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
 
 # Block with Bogus Flags 
@@ -121,6 +125,7 @@ $IPTables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j 
 $IPTables -A INPUT -m conntrack --ctstate INVALID -j DROP
 
 # Confirma que "deixamos cair tudo"
+$IPTables -A INPUT -j LOG --log-prefix'**INPUT DROPED**'
 $IPTables -A INPUT -j DROP 
 $IPTables -A OUTPUT -j DROP 
 
