@@ -1,7 +1,6 @@
 #!/bin/bash 
 # iptables Script for machine with dual network Card
-# Oscar FM - 2024 
-# Tijolo Técnico
+# Tijolo Técnico - Firewall Config
 
 # IPTables location 
 ipt="/usr/sbin/iptables"
@@ -102,3 +101,7 @@ $ipt -A INPUT -i $lan -j LOG --log-prefix "This communication is logged for secu
 $ipt -A FORWARD -j LOG --log-prefix "This communication is logged for security reasons" --log-level 7 
 $ipt -A OUTPUT -o $lan -j LOG --log-prefix "This communication is logged for security reasons" --log-level 7 
 
+# Ensure Policy 
+$ipt -A INPUT -i $lan -p tcp -m tcp -m state --state ESTABLISHED -j ACCEPT 
+$ipt -A FORWARD -j ACCEPT 
+$ipt -A OUTPUT -o $lan -p tcp -m tcp -m state --state NEW -j ACCEPT 
