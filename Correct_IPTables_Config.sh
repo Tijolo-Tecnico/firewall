@@ -37,6 +37,14 @@ $ipt --policy INPUT ACCEPT
 $ipt --policy FORWARD ACCEPT 
 $ipt --policy OUTPUT ACCEPT 
 
+# Sucicata Instalado? 
+$ipt -I INPUT -i $lan -j NFQUEUE
+$ipt -I INPUT -i $wan -j NFQUEUE
+$ipt -I OUTPUT -o $lan -j NFQUEUE
+$ipt -I OUTPUT -o $wan -j NFQUEUE
+$ipt -I FORWARD -j NFQUEUE
+
+
 # Acept connections from local network-card but drop all that have the same source 
 $ipt -A INPUT -i lo -p tcp -m tcp --syn -s 127.0.0.1/255.0.0.0 -j ACCEPT
 $ipt -A OUTPUT -o lo -p tcp -m tcp --syn -s 127.0.0.1/255.0.0.0 -j ACCEPT 
