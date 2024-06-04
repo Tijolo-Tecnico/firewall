@@ -9,7 +9,10 @@ iface lo inet loopback
 
 # The primary network interface
 allow-hotplug enp3s0f0
-iface enp3s0f0 inet dhcp
+iface enp3s0f0 inet static 
+    address 192.168.1.67
+    netmask 255.255.255.0
+    gateway 192.168.254 
 
 allow-hotplug enp3s0f1
 iface enp3s0f1 inet static 
