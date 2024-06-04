@@ -59,36 +59,36 @@ $ipt -A FORWARD -i $wan -o $lan -m state --state ESTABLISHED -j ACCEPT
 $ipt -A FORWARD -i $lan -o $wan -m state --state NEW -j ACCEPT
 
 # A WAN não recebe ligações do Exterior que não tenham sido feitas pela LAN 
-$ipt -A INPUT -i $wan -p tcp -m tcp -m state --state NEW -j LOG --log-prefix "Communication Droped: Connection not allowed from the Outside world" --log-level 7 
+$ipt -A INPUT -i $wan -p tcp -m tcp -m state --state NEW -j LOG --log-prefix "Communication Droped" --log-level 7 
 $ipt -A INPUT -i $wan -p tcp -m tcp -m state --state NEW -j DROP 
 
 # Aceita ligações Novas da LAN para a WAN e limita o tráfico às novas ligações 
 
 # Aceita chamadas de DNS 
-$ipt -A OUTPUT -o $lan -p tcp -m tcp --dport 53 -m state --state NEW -m comment --comment "DNS communication: DNS call Allowed" -j ACCEPT 
-$ipt -A INPUT -i $lan -p tcp -m tcp --dport 53 -m state --state ESTABLISHED -m comment --comment "DNS communication: DNS call Allowed" -j ACCEPT
+$ipt -A OUTPUT -o $lan -p tcp -m tcp --dport 53 -m state --state NEW -m comment --comment "DNS call Allowed" -j ACCEPT 
+$ipt -A INPUT -i $lan -p tcp -m tcp --dport 53 -m state --state ESTABLISHED -m comment --comment "DNS call Allowed" -j ACCEPT
 
 # Configuração de clientes de Email ( Usar o Thunderbird ) 
-$ipt -A OUTPUT -o $lan -p tcp -m tcp --dport 993 -m state --state NEW -m comment --comment "IMAP communication: Email Session Allowed" -j ACCEPT 
-$ipt -A INPUT -i $lan -p tcp -m tcp --dport 993 -m state --state ESTABLISHED -m comment --comment "IMAP communication: Email Session Allowed" -j ACCEPT
+$ipt -A OUTPUT -o $lan -p tcp -m tcp --dport 993 -m state --state NEW -m comment --comment "Email Session Allowed" -j ACCEPT 
+$ipt -A INPUT -i $lan -p tcp -m tcp --dport 993 -m state --state ESTABLISHED -m comment --comment "Email Session Allowed" -j ACCEPT
 
 # Usar o navegador Web 
-$ipt -A OUTPUT -o $lan -p tcp -m tcp --dport 80 -m state --state NEW -m comment --comment "HTTP communication: Web Session Allowed" -j ACCEPT 
-$ipt -A INPUT -i $lan -p tcp -m tcp --dport 80 -m state --state ESTABLISHED -m comment --comment "HTTP communication: Web Session Allowed" -j ACCEPT
-$ipt -A OUTPUT -o $lan -p tcp -m tcp --dport 443 -m state --state NEW -m comment --comment "HTTP+SSL communication: Web Session Allowed" -j ACCEPT 
-$ipt -A INPUT -i $lan -p tcp -m tcp --dport 443 -m state --state ESTABLISHED -m comment --comment "HTTP+SSL communication: Web Session Allowed" -j ACCEPT
+$ipt -A OUTPUT -o $lan -p tcp -m tcp --dport 80 -m state --state NEW -m comment --comment "Web Session Allowed" -j ACCEPT 
+$ipt -A INPUT -i $lan -p tcp -m tcp --dport 80 -m state --state ESTABLISHED -m comment --comment "Web Session Allowed" -j ACCEPT
+$ipt -A OUTPUT -o $lan -p tcp -m tcp --dport 443 -m state --state NEW -m comment --comment "Web Session Allowed" -j ACCEPT 
+$ipt -A INPUT -i $lan -p tcp -m tcp --dport 443 -m state --state ESTABLISHED -m comment --comment "Web Session Allowed" -j ACCEPT
 
 # Aceitar ligações por SSH a partir da LAN 
-$ipt -A OUTPUT -o $lan -p tcp -m tcp --dport 22 -m state --state NEW -m comment --comment "SSH communication: Secure Session Allowed" -j ACCEPT 
-$ipt -A INPUT -i $lan -p tcp -m tcp --dport 22 -m state --state ESTABLISHED -m comment --comment "SSH communication: Secure Session Allowed" -j ACCEPT
+$ipt -A OUTPUT -o $lan -p tcp -m tcp --dport 22 -m state --state NEW -m comment --comment "Secure Session Allowed" -j ACCEPT 
+$ipt -A INPUT -i $lan -p tcp -m tcp --dport 22 -m state --state ESTABLISHED -m comment --comment "Secure Session Allowed" -j ACCEPT
 $ipt -A INPUT -i $lan -p tcp -m tcp --syn --dport 22 -m connlimit --connlimit-above 3 -j REJECT # Não aceita mais do que 3 sessões ao mesmo tempo
 
 # Block packages that are not SYN but log them 
-$ipt -A INPUT -i $lan -p tcp -m tcp ! --syn -m state --state NEW -j LOG --log-prefix "Package Droped: Invalid Packages " --log-level 7 
+$ipt -A INPUT -i $lan -p tcp -m tcp ! --syn -m state --state NEW -j LOG --log-prefix "Droped: Invalid Packages " --log-level 7 
 $ipt -A INPUT -i $lan -p tcp -m tcp ! --syn -m state --state NEW -j DROP
 
 # Ignore Invalid Packages but log them 
-$ipt -A INPUT -m conntrack --ctstate INVALID -j LOG --log-prefix "Package Droped: Invalid Packages " --log-level 7 
+$ipt -A INPUT -m conntrack --ctstate INVALID -j LOG --log-prefix "Droped: Invalid Packages " --log-level 7 
 $ipt -A INPUT -m conntrack --ctstate INVALID -j DROP
 
 # Against crazy Flags 
@@ -105,9 +105,9 @@ $ipt -t mangle -A PREROUNTING -p tcp -m tcp --tcp-flags ALL NONE -j DROP
 $ipt -t mangle -A PREROUNTING -p tcp -m tcp --tcp-flags ALL ALL -j DROP
 
 # Log everything else 
-$ipt -A INPUT -i $lan -j LOG --log-prefix "This communication is logged for security reasons" --log-level 7 
-$ipt -A FORWARD -j LOG --log-prefix "This communication is logged for security reasons" --log-level 7 
-$ipt -A OUTPUT -o $lan -j LOG --log-prefix "This communication is logged for security reasons" --log-level 7 
+$ipt -A INPUT -i $lan -j LOG --log-prefix "logged for security reasons" --log-level 7 
+$ipt -A FORWARD -j LOG --log-prefix "logged for security reasons" --log-level 7 
+$ipt -A OUTPUT -o $lan -j LOG --log-prefix "logged for security reasons" --log-level 7 
 
 # Ensure Policy 
 $ipt -A INPUT -i $lan -p tcp -m tcp -m state --state ESTABLISHED -j ACCEPT 
