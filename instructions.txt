@@ -1,0 +1,32 @@
+1. Fazer login como 'root'
+2. fazer colonagem do repositório
+  "git clone https://github.com/Tijolo-Tecnico/firewall"
+3. Entrar no directorio: 
+  "cd firewall" 
+4. Copiar ficheiros: 
+  "cp ./etc/network/interfaces /etc/network/interfaces"
+  "cp ./etc/sysctl.conf /etc/sysctl.conf"
+  "cp ./etc/resolv.conf /etc/resolv.conf"
+  "cp ./etc/hosts /etc/hosts"
+5. Assegurar que os ficheiros não serão modificados" 
+  "chattr +i /etc/network/interfaces"
+  "chattr +i /etc/sysctl.conf"
+  "chattr +i /etc/resolv.conf"
+  "chattr +i /etc/hosts" 
+5. Executar o script com as configurações da firewall ( IPTables ) 
+  "bash ./Correct_IPTables_Config.sh"
+6. Reiniciar o Linux
+
+----
+
+O Windows 
+
+  A Placa de rede, nas propriedades configurar IP Fixo com os seguintes dados: 
+
+  IP Address: 10.0.0.20
+  netmask: 255.0.0.0
+  gateway: 192.168.1.67
+
+Reiniciar o Windows. 
+
+Espero que fique tudo a funcionar como deveria. 
