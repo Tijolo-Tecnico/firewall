@@ -45,7 +45,7 @@ $ipt --policy OUTPUT ACCEPT
 # Acept connections from local network-card but drop all that have the same source 
 $ipt -A INPUT -i lo -p tcp -m tcp --syn -s 127.0.0.1/255.0.0.0 -j ACCEPT
 $ipt -A OUTPUT -o lo -p tcp -m tcp --syn -s 127.0.0.1/255.0.0.0 -j ACCEPT 
-$ipt -A INPUT -s $lback ! -i lo -j DROP 
+$ipt -A INPUT -s 127.0.0.1/8 ! -i lo -j DROP 
 
 # Preparar para redireccionamento do tráfico
 echo "1" > /proc/sys/net/ipv4/ip_forward
