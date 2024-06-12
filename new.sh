@@ -2,6 +2,12 @@
 # iptables Script for machine with dual network Card
 # Tijolo Técnico - Firewall Config
 
+IPT="/usr/sbin/iptables" 
+
+LAN="enp3s0f1"
+WAN="enp3s0f0"
+
+
 # IPTables location 
 # Clear IPTables rules 
 $ipt -F
